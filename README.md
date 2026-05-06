@@ -1,45 +1,90 @@
-<img src="docs/img/square_logo.png" align="right" width="25%"/>
+<!-- ```markdown -->
+# RL-Inspired Controller of Mixed Traffic with Lane-Changing
 
 [![Build Status](https://travis-ci.com/flow-project/flow.svg?branch=master)](https://travis-ci.com/flow-project/flow)
-[![Docs](https://readthedocs.org/projects/flow/badge)](http://flow.readthedocs.org/en/latest/)
-[![Coverage Status](https://coveralls.io/repos/github/flow-project/flow/badge.svg?branch=master)](https://coveralls.io/github/flow-project/flow?branch=master)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/flow-project/flow/binder)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/flow-project/flow/blob/master/LICENSE.md)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 
-# Flow
+This repository contains the code, simulation environments, and experimental configurations for the paper **"Control of Mixed-Autonomy Traffic via Autonomous Vehicles with Lane-Changing Behavior."** This project extends the Flow computational framework to address the destabilizing effects of human lane-changing in multi-lane mixed-autonomy traffic. We introduce a novel rule-based, pair-aligned control strategy that synchronizes the motion of two Autonomous Vehicles (AVs) across lanes. By coupling two lanes into a single virtual lane, this controller successfully suppresses human lane-changing and mitigates stop-and-go oscillations, increasing the stabilized average speed by 7.4% compared to independent single-lane controllers.
 
-[Flow](https://flow-project.github.io/) is a computational framework for deep RL and control experiments for traffic microsimulation.
+## Table of Contents
+- [Repository Structure](#repository-structure)
+- [Installation](#installation)
+- [Running Experiments](#running-experiments)
+  - [Rule-Based Controllers (Non-RL)](#rule-based-controllers-non-rl)
+  - [Reinforcement Learning (RL)](#reinforcement-learning-rl)
+- [Citation](#citation)
 
-See [our website](https://flow-project.github.io/) for more information on the application of Flow to several mixed-autonomy traffic scenarios. Other [results and videos](https://sites.google.com/view/ieee-tro-flow/home) are available as well.
+## Repository Structure
 
-# More information
+Based on the project's `.gitignore`, the core framework files from the original Flow repository are excluded to maintain focus on the novel traffic control experiments. The core contributions are located within the `examples/exp_configs/` directory:
 
-- [Documentation](https://flow.readthedocs.org/en/latest/)
-- [Installation instructions](http://flow.readthedocs.io/en/latest/flow_setup.html)
-- [Tutorials](https://github.com/flow-project/flow/tree/master/tutorials)
-- [Binder Build (beta)](https://mybinder.org/v2/gh/flow-project/flow/binder)
+* `examples/exp_configs/non_rl/`
+    * `paired_ring.py`: Implementation of the proposed **Pair-Aligned Rule-based Controller (PARC)** coordinating two AVs.
+    * `hand_craft.py`: A handcrafted controller enforcing synchronized motion across two lanes.
+    * `AllHumanDrivers_IDM44.py`: Baseline environment featuring 44 human-driven vehicles utilizing the IDM and LC2013 lane-changing models.
+* `examples/exp_configs/rl/singleagent/`
+    * `singleagent_ring.py`: Single AV RL training environment.
+    * `singleagent_ring2AV.py`: Cooperative centralized RL environment for two AVs.
 
-# Technical questions
+## Installation
 
-If you have a bug, please report it. Otherwise, join the [Flow Users group](https://join.slack.com/t/flow-users/shared_invite/enQtODQ0NDYxMTQyNDY2LTY1ZDVjZTljM2U0ODIxNTY5NTQ2MmUxMzYzNzc5NzU4ZTlmNGI2ZjFmNGU4YjVhNzE3NjcwZTBjNzIxYTg5ZmY) on Slack!  
+This project requires Python 3.7.3 and relies on SUMO for microscopic traffic simulation. 
 
-# Getting involved
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/TravidP/RL_Inspired_Controller_of_Mixed_Traffic_Lanechanging.git](https://github.com/TravidP/RL_Inspired_Controller_of_Mixed_Traffic_Lanechanging.git)
+   cd RL_Inspired_Controller_of_Mixed_Traffic_Lanechanging
+   ```
 
-We welcome your contributions.
+2. **Set up the Conda environment:**
+   We provide an `environment.yml` file to handle all Python dependencies (including Ray, TensorFlow, and SUMO tools).
+   ```bash
+   conda env create -f environment.yml
+   conda activate flow
+   ```
 
-- Please report bugs and improvements by submitting [GitHub issue](https://github.com/flow-project/flow/issues).
-- Submit your contributions using [pull requests](https://github.com/flow-project/flow/pulls). Please use [this template](https://github.com/flow-project/flow/blob/master/.github/PULL_REQUEST_TEMPLATE.md) for your pull requests.
+3. **SUMO Setup:**
+   Ensure SUMO is installed on your system and the `SUMO_HOME` environment variable is set. If you encounter XSD schema errors during simulation, you can run the provided fix script:
+   ```bash
+   bash examples/fix_sumo_xsd.sh
+   ```
 
-# Citing Flow
+## Running Experiments
 
-If you use Flow for academic research, you are highly encouraged to cite our paper:
+### Rule-Based Controllers (Non-RL)
 
-C. Wu, A. Kreidieh, K. Parvate, E. Vinitsky, A. Bayen, "Flow: Architecture and Benchmarking for Reinforcement Learning in Traffic Control," CoRR, vol. abs/1710.05465, 2017. [Online]. Available: https://arxiv.org/abs/1710.05465
+To simulate the rule-based environments (such as our proposed PARC controller), use the `simulate.py` runner. The command below executes the pair-aligned ring road scenario:
 
-If you use the benchmarks, you are highly encouraged to cite our paper:
+```bash
+python examples/simulate.py paired_ring
+```
 
-Vinitsky, E., Kreidieh, A., Le Flem, L., Kheterpal, N., Jang, K., Wu, F., ... & Bayen, A. M,  Benchmarks for reinforcement learning in mixed-autonomy traffic. In Conference on Robot Learning (pp. 399-409). Available: http://proceedings.mlr.press/v87/vinitsky18a.html
+**Optional arguments:**
+* `--num_runs INT`: Number of consecutive simulations to run.
+* `--no_render`: Disable the SUMO GUI (useful for headless servers).
 
-# Contributors
+### Reinforcement Learning (RL)
 
-Flow is supported by the [Mobile Sensing Lab](http://bayen.eecs.berkeley.edu/) at UC Berkeley and Amazon AWS Machine Learning research grants. The contributors are listed in [Flow Team Page](https://flow-project.github.io/team.html).
+To train the RL policies using RLlib, use the `train.py` runner. For example, to train the cooperative two-AV centralized controller:
+
+```bash
+python examples/train.py singleagent_ring2AV --rl_trainer rllib
+```
+
+## Citation
+
+If you use this code or our modified simulation environments in your academic research, please cite our paper accepted at the 23rd International Federation of Automatic Control (IFAC) World Congress (Busan, South Korea, 2026):
+
+```bibtex
+@inproceedings{pei2026control,
+  title={Control of Mixed-Autonomy Traffic via Autonomous Vehicles with Lane-Changing Behavior},
+  author={Pei, Shuwei and Sayin, Muhammed O. and Ahmed, Saeed},
+  booktitle={23rd International Federation of Automatic Control (IFAC) World Congress},
+  year={2026},
+  address={Busan, South Korea}
+}
+```
+
+## Acknowledgments
+This repository utilizes the Flow framework originally developed by the Mobile Sensing Lab at UC Berkeley.
+```
