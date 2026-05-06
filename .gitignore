@@ -112,3 +112,8 @@ flow.ang
 *.sang
 
 config_personal.py
+
+# Ignore flow framework directories
+flow/
+scripts/
+tests/
