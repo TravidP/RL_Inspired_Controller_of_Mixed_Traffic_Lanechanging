@@ -13,11 +13,30 @@ We extend the [Flow](https://flow-project.github.io/) computational framework to
 * Mitigates stop-and-go oscillations.
 * Increases the stabilized average speed by **7.4%** compared to independent single-lane controllers.
 
+**Problem Description: Stop-and-Go Oscillations (All Human Drivers)**
+Persistent oscillations driven by human lane-changing.
+* **Trajectory**: ![Stop-and-Go](Docs/trajectory_log_allhuman44.png)
+
+[![Watch Stop-and-Go on YouTube](https://img.youtube.com/vi/lSaD2bFGrEA/hqdefault.jpg)](https://youtu.be/lSaD2bFGrEA)
+
 <p align="center">
   <img src="Docs/The overview of paired controller for stabilizing flow.png" width="800">
   <br>
   <em>Paired-controller design: The proposed rule-based controller coordinates the AVs, suppresses disruptive lane changes, and achieves stability and high efficiency.</em>
 </p>
+
+## Repository Structure
+
+This repository is built upon the [Flow](https://flow-project.github.io/) framework. Below is a brief overview of the key directories and files included:
+
+*   `setup.py`: The installation script used to set up the Flow environment and required dependencies.
+*   `examples/`: Contains the core simulation and training scripts, as well as the experimental configurations.
+    *   `simulate.py`: The runner script for evaluating non-RL simulations, including our proposed Pair-Aligned Rule-Based Controller (PARC) and baseline single-lane controllers.
+    *   `train.py`: The runner script used for training both single-agent and multi-agent reinforcement learning (RL) controllers.
+*   `examples/exp_configs/`: Stores the experimental configurations for various scenarios.
+    *   `rl/singleagent/`: Configurations for single-agent RL experiments.
+    *   `rl/multiagent/`: Configurations for multi-agent RL experiments.
+    *   `non_rl/`: Configurations for non-RL simulations.
 
 ---
 
@@ -30,28 +49,26 @@ The following time-space diagrams and simulation recordings demonstrate the perf
 Couples both lanes into a virtual lane to maximize throughput and stability.
 * **Flowchart**: ![Logic](Docs/The flowchart of paired controller.png)
 * **Trajectory**: ![PARC Result](Docs/trajectory_log_paired_controller.png)
-<video src="Docs/PARC.mp4" width="800" controls></video>
+
+[![Watch PARC Video on YouTube](https://img.youtube.com/vi/W-hXR4RJz5o/hqdefault.jpg)](https://youtu.be/W-hXR4RJz5o)
 
 ### 2. Reinforcement Learning Controllers
 **Cooperative RL Controller (2 AVs)**
 Two AVs form a cross-lane paired structure, acting as a unified moving bottleneck to eliminate merging gaps.
 * **Trajectory**: ![Cooperative RL](Docs/trajectory_log_2AVCentral.png)
-<video src="Docs/RL_Coop_2AV.mp4" width="800" controls></video>
+
+[![Watch Cooperative RL Video on YouTube](https://img.youtube.com/vi/2ezlDmujKCk/hqdefault.jpg)](https://youtu.be/2ezlDmujKCk)
 
 **Single-Agent RL Controller (1 AV)**
 The single AV minimizes headways to suppress lane changes, but oscillations persist.
 * **Trajectory**: ![Single RL AV](Docs/trajectory_log_1AVLC.png)
-<video src="Docs/RL_1AV.mp4" width="800" controls></video>
+
+[![Watch Single-Agent RL Video on YouTube](https://img.youtube.com/vi/QN3oOsjQgOg/hqdefault.jpg)](https://youtu.be/QN3oOsjQgOg)
 
 ### 3. Baselines & Comparisons
-**Stop-and-Go Oscillations (All Human Drivers)**
-Persistent oscillations driven by human lane-changing.
-* **Trajectory**: ![Stop-and-Go](Docs/trajectory_log_allhuman44.png)
-<video src="Docs/stop_go_original.mp4" width="800" controls></video>
-
 **Independent Single-Lane Controllers**
-* **1 AV (Single-lane Controller)**: ![1AV-SLC](Docs/trajectory_log_handcraft.png) | <video src="Docs/1AV_SLC.mp4" width="400" controls></video>
-* **2 AVs (Independent Controllers)**: ![2AV-SLC](Docs/trajectory_log_handcraft2av.png) | <video src="Docs/2AV_SLC.mp4" width="400" controls></video>
+* **1 AV (Single-lane Controller)**: ![1AV-SLC](Docs/trajectory_log_handcraft.png) <br> [![Watch 1AV-SLC on YouTube](https://img.youtube.com/vi/ETK8Jipwp1Q/hqdefault.jpg)](https://youtu.be/ETK8Jipwp1Q)
+* **2 AVs (Independent Controllers)**: ![2AV-SLC](Docs/trajectory_log_handcraft2av.png) <br> [![Watch 2AV-SLC on YouTube](https://img.youtube.com/vi/Bmx-kGFCUmU/hqdefault.jpg)](https://youtu.be/Bmx-kGFCUmU)
 
 **Performance Metric**
 * **Average Speed Comparison**: ![Avg Speed Comparison](Docs/avg_speed_comparison.png)
