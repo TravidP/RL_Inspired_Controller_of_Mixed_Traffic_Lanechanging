@@ -49,8 +49,8 @@ Couples both lanes into a virtual lane to maximize throughput and stability.
 * **Video**: [🎥 Watch Video](Docs/PARC.mp4)
 
 ### 5. Baselines and Comparisons
-* **1 AV (Single-lane Controller)**: ![1AV-SLC](Docs/trajectory_log_handcraft.png) | [🎥 Video](Docs/1AV-SLC.mp4)
-* **2 AVs (Independent Single-lane Controllers)**: ![2AV-SLC](Docs/trajectory_log_handcraft2av.png) | [🎥 Video](Docs/2AV-SLC.mp4)
+* **1 AV (Single-lane Controller)**: ![1AV-SLC](Docs/trajectory_log_handcraft.png) | [🎥 Video](Docs/1AV_SLC.mp4)
+* **2 AVs (Independent Single-lane Controllers)**: ![2AV-SLC](Docs/trajectory_log_handcraft2av.png) | [🎥 Video](Docs/2AV_SLC.mp4)
 * **Average Speed Comparison**: ![Avg Speed Comparison](Docs/avg_speed_comparison.png)
 
 ## Repository Structure
