@@ -1,6 +1,7 @@
 # RL-Inspired Controller of Mixed Traffic with Lane-Changing
-
+[![Framework: Flow](https://img.shields.io/badge/Framework-Flow-blue.svg)](https://flow-project.github.io/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
+
 **📄 Read our paper:** [Control of Mixed-Autonomy Traffic via Autonomous Vehicles with Lane-Changing Behavior](Docs/ifac6pages.pdf)
 
 ## Overview
