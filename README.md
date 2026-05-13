@@ -1,7 +1,7 @@
 <!-- ```markdown -->
 # RL-Inspired Controller of Mixed Traffic with Lane-Changing
 
-[![Build Status](https://travis-ci.com/flow-project/flow.svg?branch=master)](https://travis-ci.com/flow-project/flow)
+[![Build Status](https://github.com/flow-project/flow/actions/workflows/ci.yml/badge.svg)](https://github.com/flow-project/flow/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 
 This repository contains the code, simulation environments, and experimental configurations for the paper **"Control of Mixed-Autonomy Traffic via Autonomous Vehicles with Lane-Changing Behavior."** This project extends the Flow computational framework to address the destabilizing effects of human lane-changing in multi-lane mixed-autonomy traffic. We introduce a novel rule-based, pair-aligned control strategy that synchronizes the motion of two Autonomous Vehicles (AVs) across lanes. By coupling two lanes into a single virtual lane, this controller successfully suppresses human lane-changing and mitigates stop-and-go oscillations, increasing the stabilized average speed by 7.4% compared to independent single-lane controllers.
