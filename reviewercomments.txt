@@ -1,0 +1,152 @@
+Reviewer 5 of IFAC WC 2026 submission 1796
+
+Comments to the author
+======================
+
+This paper studies traffic-flow stabilization in a
+mixed-autonomy double lane ring-road setting with realistic
+human lane-changing behavior. Motivated by the limitations
+of prior work that assumes no lane changes, the authors
+demonstrate through high-fidelity SUMO simulations that a
+single autonomous vehicle (AV) even when trained with
+reinforcement learning (RL), is insufficient to suppress
+stop-and-go oscillations when human-driven vehicles (HDVs)
+are allowed to change lanes.
+To address this challenge, the paper proposes a cooperative
+control framework involving two AVs. Through centralized
+cooperative RL, an emergent cross-lane paired formation is
+observed, which effectively suppresses lane-changing and
+stabilizes traffic. Inspired by this emergent behavior, the
+authors design a simple rule-based pair-aligned controller
+that synchronizes the two AVs across lanes. Simulation
+results show that the proposed controller stabilizes both
+lanes and improves the stabilized average speed compared to
+existing single lane stabilization controllers.
+
+Comments: &#8232;
+
+- The cooperative RL framework and the derived controller
+assume access to centralized or shared information between
+AVs, which may be challenging to guarantee in real-world
+deployments.&#8232;- While the authors suggest that the
+approach could generalize to multi-lane scenarios, the
+paper only evaluates a two-lane ring road with exactly two
+AVs. Scalability to larger networks or higher AVdensities
+remains unexplored.
+
+
+- Although smoothness penalties are included in the reward
+and controller design, the paper does not report explicit
+metrics related to fuel consumption, energy efficiency, or
+passenger comfort.
+
+
+- The rule-based controller relies on several design
+parameters (for example, thresholds and gains). A
+sensitivity analysis would strengthen the paper. 
+
+Reviewer 6 of IFAC WC 2026 submission 1796
+Comments to the author
+======================
+
+The paper presents a valuable extension of an existing
+work, such as Yan et al. (2023). The topic is relevant and
+interesting, although sime minor comments should be added.
+First, how the weights in (10)-(13) should be selected?
+What is the impact of them on the overall performance
+level? Second, could you provide some comments about the
+feasibility of the cooperative RL problem?
+
+
+Reviewer 7 of IFAC WC 2026 submission 1796
+
+Comments to the author
+======================
+
+This paper studies a simple but important question: does
+traffic stabilization by autonomous vehicles still work
+when human drivers are allowed to change lanes? The answer
+provided here is clearly no for a single autonomous
+vehicle, and that is an important result by itself.
+
+The authors show that when humans can change lanes, lane
+changes become the main source of traffic instability. A
+single autonomous vehicle can only protect its own lane by
+driving very close to the vehicle ahead, but disturbances
+from the other lane continue to generate stop-and-go waves.
+
+The key contribution of the paper is to show that two
+autonomous vehicles, one in each lane, can stabilize
+traffic if they coordinate across lanes. Using
+reinforcement learning, the authors observe that the two
+vehicles naturally learn to align their positions and
+speeds, forming a cross-lane pair. This paired
+configuration removes the gaps that human drivers normally
+use to change lanes, which strongly reduces lane-changing
+and stabilizes traffic.
+
+Based on this observation, the authors propose a simple
+rule-based controller that directly enforces this pairing
+behavior. The controller is easy to understand, does not
+rely on learning at run time, and improves average traffic
+speed compared to existing single-lane controllers.
+
+Overall, the paper makes a clear point: in multi-lane mixed
+traffic, stability is limited by lane-changing, not by
+longitudinal control, and cross-lane coordination is
+necessary. The ideas are simple, convincing, and well
+supported by simulations. 
+I recommend acceptance.
+
+
+Reviewer 8 of IFAC WC 2026 submission 1796
+
+Comments to the author
+======================
+
+The paper is clearly written and well motivated. However,
+the interpretation of the cooperative RL results as
+demonstrating an emergent cross-lane aligned behavior is
+not fully justified. In the proposed reward function, two
+key terms explicitly penalize longitudinal separation and
+velocity mismatch between the two AVs, which directly
+incentivize alignment by design. As a result, once the RL
+training converges, cross-lane alignment becomes an
+expected outcome of the reward structure rather than a
+reward-agnostic emergent behavior. An ablation study of the
+reward terms would be necessary to support the claim of
+emergence.
+
+While the proposed pair-aligned strategy is shown to
+outperform several baseline controllers, the paper does not
+assess whether this structure is system-optimal or how
+close it is to the system optimum. The current evaluation
+demonstrates relative improvement rather than optimality,
+and no analysis is provided to quantify the gap between the
+proposed strategy and a potential optimal solution.
+Clarifying this distinction, or providing additional
+evidence regarding optimality or near-optimality, would
+strengthen the contribution.
+
+
+Reviewer 11 of IFAC WC 2026 submission 1796
+
+Comments to the author
+======================
+
+This paper investigated a very interesting work that
+whether the traffic wave can be mitigated in a two-lane
+system. It is an extension of the classic single-AV case
+because the perturbation from an extra dimension is
+introduced. The story is well written and figures are well
+used to support understanding. A reinforcement learning
+method has been developed to suppress the stop-and-go
+phenomenon. Simulation results in SUMO demonstrated the
+effectiveness of the proposed method. The analysis is fair
+enough and the derivation process is easy to follow, making
+this work convincing. 
+
+The conclusion offers sharp, actionable insights,
+underscoring the potential of autonomous systems in complex
+transport networks and providing a strong foundation for
+future research in more generalized environments.
