@@ -1,0 +1,21 @@
+{
+  "outputSlides": [
+    { "outputSlide": 1, "sourceSlide": 2, "narrativeRole": "UoG-branded title", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] },
+    { "outputSlide": 2, "sourceSlide": 2, "narrativeRole": "problem and evidence", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] },
+    { "outputSlide": 3, "sourceSlide": 2, "narrativeRole": "comparison table", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] },
+    { "outputSlide": 4, "sourceSlide": 2, "narrativeRole": "method sequence", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] },
+    { "outputSlide": 5, "sourceSlide": 2, "narrativeRole": "testbed", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] },
+    { "outputSlide": 6, "sourceSlide": 2, "narrativeRole": "MDP formulation", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] },
+    { "outputSlide": 7, "sourceSlide": 2, "narrativeRole": "single-AV observation", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] },
+    { "outputSlide": 8, "sourceSlide": 2, "narrativeRole": "single-agent result", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] },
+    { "outputSlide": 9, "sourceSlide": 2, "narrativeRole": "cooperative architecture", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] },
+    { "outputSlide": 10, "sourceSlide": 2, "narrativeRole": "reward design", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] },
+    { "outputSlide": 11, "sourceSlide": 2, "narrativeRole": "geometric mechanism", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] },
+    { "outputSlide": 12, "sourceSlide": 2, "narrativeRole": "PARC controller", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] },
+    { "outputSlide": 13, "sourceSlide": 2, "narrativeRole": "equilibrium cruise", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] },
+    { "outputSlide": 14, "sourceSlide": 2, "narrativeRole": "validation matrix", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] },
+    { "outputSlide": 15, "sourceSlide": 2, "narrativeRole": "quantitative conclusion", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] },
+    { "outputSlide": 16, "sourceSlide": 2, "narrativeRole": "official IFAC 2029 advertisement", "reuseMode": "duplicate-slide", "editTargets": [{ "sourceElementIds": ["sh/b29kza94", "sh/x4r21kru", "sh/r65knqtk"], "action": "replace" }] }
+  ],
+  "omittedSourceSlides": [{ "sourceSlide": "all except 2", "reason": "The selected hybrid treatment uses the Simple Light title-slide hierarchy as the shared retained source and replaces its local sample content." }]
+}

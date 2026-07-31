@@ -1,0 +1,55 @@
+\definecolor{UoGRed}{HTML}{CC0000}
+\definecolor{UoGDarkGray}{HTML}{505050}
+\definecolor{UoGTextGray}{HTML}{555555}
+\definecolor{UoGLightGray}{HTML}{E9E9E9}
+\definecolor{UoGBlue}{HTML}{2F75B5}
+
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{structure}{fg=UoGRed}
+\setbeamercolor{frametitle}{fg=black,bg=white}
+\setbeamercolor{alerted text}{fg=UoGRed}
+\setbeamerfont{frametitle}{series=\bfseries,size={\fontsize{17}{19}\selectfont}}
+\setbeamerfont{normal text}{size=\normalsize}
+\setbeamertemplate{navigation symbols}{}
+\setbeamersize{text margin left=0.58cm,text margin right=0.58cm}
+
+\setbeamertemplate{headline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=1.03cm,dp=0cm]{normal text}
+    \hspace*{0.46cm}\raisebox{0.13cm}{\includegraphics[height=0.70cm]{assets/uog-logo.png}}
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.20cm,dp=0cm]{structure}
+    \color{UoGRed}\rule{\paperwidth}{0.20cm}%
+    \hspace*{-1.40cm}\raisebox{0.03cm}{\color{white}\scriptsize\insertframenumber}
+  \end{beamercolorbox}%
+}
+
+\setbeamertemplate{frametitle}{%
+  \vspace*{0.05cm}%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\textwidth,sep=0.04cm,dp=0.05cm,left]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle
+  \end{beamercolorbox}%
+}
+
+\setbeamertemplate{footline}{}
+
+\newcommand{\UoGTakeaway}[1]{%
+  \begin{beamercolorbox}[wd=\linewidth,sep=0.16cm,center]{normal text}
+    \colorbox{UoGDarkGray}{\parbox{0.965\linewidth}{\centering\color{white}\bfseries #1}}
+  \end{beamercolorbox}%
+}
+
+\newcommand{\TalkSource}[1]{%
+  \vfill\hfill{\fontsize{5.5}{6.2}\selectfont\color{UoGTextGray}Source: #1}%
+}
+
+\newif\ifdraftmode
+\draftmodefalse
+\newcommand{\TalkTODO}[1]{%
+  \ifdraftmode
+    \par\smallskip\colorbox{yellow!35}{\parbox{0.95\linewidth}{\scriptsize\textbf{TODO:} #1}}%
+  \fi
+}
+
+\newcommand{\RedLabel}[1]{\textcolor{UoGRed}{\bfseries #1}}
+\newcommand{\MethodArrow}{\tikz[baseline=-0.5ex]\draw[->,line width=0.8pt,UoGRed] (0,0)--(0.55,0);}

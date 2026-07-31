@@ -1,0 +1,5 @@
+The user explicitly selected a hybrid style rather than exact Simple Light fidelity.
+All output slides duplicate Simple Light source slide 2 and retain its imported master/layout relationship.
+The three local sample text elements are replaced by content-specific editable elements.
+Slides 1–15 intentionally add authentic UoG logo/red-rule brand chrome.
+Slide 16 intentionally removes all chrome and uses the supplied official advertisement full bleed.

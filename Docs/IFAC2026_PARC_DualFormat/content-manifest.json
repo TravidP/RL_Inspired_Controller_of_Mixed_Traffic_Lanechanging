@@ -1,0 +1,26 @@
+{
+  "deck": "IFAC2026_PARC_Methodology",
+  "language": "English",
+  "aspectRatio": "16:9",
+  "brand": { "red": "#CC0000", "darkGray": "#505050", "template": "UoG-Wide.pptx" },
+  "slides": [
+    { "number": 1, "time": "0:30", "title": "Control of Mixed-Autonomy Traffic via Autonomous Vehicles with Lane-Changing Behavior" },
+    { "number": 2, "time": "0:50", "title": "Stop-and-go waves become a two-dimensional control problem" },
+    { "number": 3, "time": "1:00", "title": "Existing methods solve different parts of the problem" },
+    { "number": 4, "time": "0:45", "title": "The study follows three methodological questions" },
+    { "number": 5, "time": "1:00", "title": "A controlled testbed isolates lane-changing disturbances" },
+    { "number": 6, "time": "0:50", "title": "We formulate traffic control as a finite-horizon MDP" },
+    { "number": 7, "time": "1:10", "title": "The single AV observes both lanes but acts locally" },
+    { "number": 8, "time": "0:50", "title": "The single-agent formulation produces a locally rational policy" },
+    { "number": 9, "time": "1:10", "title": "Cooperative RL changes the information and action structure" },
+    { "number": 10, "time": "1:15", "title": "The cooperative reward explicitly shapes coordination" },
+    { "number": 11, "time": "0:50", "title": "The learned policy suggests a geometric control mechanism" },
+    { "number": 12, "time": "1:20", "title": "PARC encodes the learned mechanism as a hybrid controller" },
+    { "number": 13, "time": "0:50", "title": "The cruising speed follows the equilibrium traffic geometry" },
+    { "number": 14, "time": "0:55", "title": "The validation isolates the value of each methodological step" },
+    { "number": 15, "time": "0:45", "title": "RL identifies the structure; PARC executes it efficiently" },
+    { "number": 16, "time": "0:20", "title": "IFAC 2029 Amsterdam" }
+  ],
+  "canonicalVisibleContent": "IFAC2026_PARC_Methodology.tex",
+  "notesPolicy": "Every slide contains Timing, Opening, Main explanation, Scientific interpretation, Transition, Likely question, and Sources sections."
+}

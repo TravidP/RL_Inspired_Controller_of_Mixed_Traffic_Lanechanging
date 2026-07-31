@@ -1,0 +1,4 @@
+Local source files only; no web assets were used.
+UoG logo: Docs/IFAC2026_PARC_DualFormat/assets/uog-logo.png (from UoG-Wide.pptx).
+Slide content and notes: Docs/IFAC2026_PARC_DualFormat/IFAC2026_PARC_Methodology.tex and existing notes-bearing PPTX.
+Final slide: IFAC29.Advertising.pdf, page 1, rasterized at 300 dpi.

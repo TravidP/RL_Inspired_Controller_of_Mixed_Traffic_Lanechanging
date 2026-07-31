@@ -1,0 +1,583 @@
+%===============================================================================
+% ifacconf.tex 2022-02-11 jpuente  
+% Template for IFAC meeting papers
+% Copyright (c) 2022 International Federation of Automatic Control
+%===============================================================================
+\documentclass{ifacconf}
+
+% \addbibresource{ifacconf.bib}
+\usepackage{graphicx, color}      % include this line if your document contains figures
+% \usepackage{natbib}        % required for bibliography
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{bbm}
+\usepackage{amsfonts}
+\usepackage{booktabs}
+\usepackage{dsfont}
+\usepackage{siunitx}
+\usepackage{balance}
+\usepackage{balance}
+\usepackage{soul}
+\usepackage{xcolor}
+\usepackage{caption}
+
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\newcommand{\cC} { {\mathcal C}}
+\newcommand{\cM} { {\mathcal M}}
+\newcommand{\cD} { {\mathcal D}}
+\newcommand{\cK} { {\mathcal K}}
+\newcommand{\cL} { {\mathcal L}}
+\newcommand{\cS} { {\mathcal S}}
+
+\newcommand{\bR} { {\mathbb R}}
+
+
+\newcommand{\1}{\mbox{1}\hspace{-0.25em}\mbox{l}}
+
+\def\red{\hfill $\lhd$}
+
+\newcommand{\yk}[1]{{\color{blue}#1}}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata}
+\usetikzlibrary{arrows,shapes,backgrounds,calc,positioning,patterns}
+\usetikzlibrary{calc,arrows,shapes,backgrounds,calc,positioning,patterns,decorations.pathmorphing,decorations.markings,mindmap,trees}
+\tikzstyle{block} = [draw, rectangle, minimum height=2em, minimum
+width=4em] \tikzstyle{sum} = [draw, fill=blue!20, circle, node
+distance=1cm] \tikzstyle{input} = [coordinate] \tikzstyle{output} =
+[coordinate] \tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+\usepackage[american,cute inductors,smartlabels]{circuitikz}
+\usetikzlibrary{arrows,automata}
+\usepackage[american,cuteinductors,smartlabels]{circuitikz}
+\usetikzlibrary{calc}
+\ctikzset{bipoles/thickness=1} \ctikzset{bipoles/length=0.8cm}
+\ctikzset{bipoles/diode/height=.375}
+\ctikzset{bipoles/diode/width=.3}
+\ctikzset{tripoles/thyristor/height=.8}
+\ctikzset{tripoles/thyristor/width=1}
+\ctikzset{bipoles/vsourceam/height/.initial=.7}
+\ctikzset{bipoles/vsourceam/width/.initial=.7} \tikzstyle{every
+node}=[font=\small] \tikzstyle{every path}=[line width=0.8pt,line
+cap=round,line join=round]
+%===============================================================================
+
+
+
+\begin{document}
+\begin{frontmatter}
+
+\title{Control of Mixed-Autonomy Traffic via Autonomous Vehicles with Lane-Changing Behavior}
+%Passivity based control of nonlinear systems described by  retarted functional differential equations\thanksref{footnoteinfo}} 
+% Title, preferably not more than 10 words.
+
+% \thanks[footnoteinfo]{The work of xxx was supported in part by xx Grant Number xxx. The work of xx and xxx was supported by xxx under Grant xxx. }
+
+\author[NL]{Shuwei Pei} 
+\author[TK]{Muhammed O. Sayin}
+\author[NL]{Saeed Ahmed} 
+
+
+
+
+\address[NL]{Jan C. Willems Center for Systems and Control, ENTEG, Faculty of Science and Engineering, University of Groningen, 9747 AG Groningen, the Netherlands (e-mails: s.pei@rug.nl, s.ahmed@rug.nl)}
+\address[TK]{Department of Electrical, Electronics Engineering, Bilkent University, TR-06800 Ankara, Turkey (e-mail: sayin@ee.bilkent.edu.tr)}
+
+\begin{abstract}                % Abstract of not more than 250 words.
+Recent works by \citet{9765650} showed that a single autonomous vehicle (AV) can stabilize stop-and-go oscillations on a double-lane ring road. However, their approach assumes that human drivers do not change lanes and thus does not capture realistic multi-lane mixed-autonomy traffic. We first discovered through high-fidelity traffic simulations that extending this paradigm to a single AV trained with human lane-changing behaviors is insufficient: such an AV still fails to stabilize traffic flow on a double-lane ring road with human lane-changing. Motivated by this, we study a double-lane ring road allowing unpredictable lane-changing by human drivers and propose a rule-based, pair-aligned control strategy via two AVs that synchronizes their motion across lanes to address this challenge. The proposed controller suppresses human lane-changing, effectively couples the two lanes into a single virtual lane, and mitigates stop-and-go oscillations. The structure of this control strategy is inspired by cooperative reinforcement learning (RL) experiments, in which two AVs repeatedly learned to form a cross-lane paired configuration. In high-fidelity traffic simulations, our controller increases the stabilized average speed by 7.4\% compared with two AVs equipped with a stabilization controller from \citet{9765650}, whose design is limited to longitudinal regulation in one lane.
+
+
+\end{abstract}
+
+\begin{keyword}
+Traffic control, connected AVs, RL, intelligent transportation systems
+\end{keyword}
+
+\end{frontmatter}
+%===============================================================================
+
+\section{Introduction}
+Stop-and-go traffic waves on highways have emerged as a critical challenge, contributing to travel delays, collision risk, and environmental impact \citep{laval2010mechanism}. The integration of AVs into road networks introduces new opportunities for intelligent traffic management.  
+More recently, learning-based approaches in AVs have gained prominence, particularly in RL. These methods learn control policies directly from interaction data, enabling AVs to handle the unpredictability of human-driven vehicles (HDVs). Applications range from bottleneck \citep{vinitsky2020optimizing} and merging scenarios \citep{liu2021efficient} to stop-and-go wave suppression \citep{wu2018stabilizing,9765650} and network-level coordination \citep{suriyarachchi2022multi}. 
+  
+  From a methodological perspective, existing studies on traffic control can be broadly categorized into three groups: rule-based methods, optimization-based methods, and learning-based methods. Rule-based approaches manage traffic through predefined policies or heuristics. These methods are favored for their simplicity, interpretability, and ease of implementation. On freeways, adaptive cruise control (ACC) systems, based on feedback of relative distance and speed, have been widely deployed to mitigate stop-and-go oscillations \citep{vahidi2004research}. Building on this, cooperative adaptive cruise control (CACC) has been shown to further enhance traffic stability and throughput by enabling tighter vehicle coordination \citep{van2006impact}. 
+
+
+Optimization-based methods formulate traffic management as an explicit optimization problem grounded in mathematical models of vehicle and network dynamics. In contrast to rule-based heuristics, these approaches derive control inputs that optimize system-level objectives subject to dynamic and operational constraints. \citet{newell2002simplified} introduced a simplified car-following model that has been widely adopted for theoretical analysis, while the intelligent driver model (IDM) developed by \citet{treiber2000congested} remains one of the most influential microscopic traffic flow models. Building on such formulations, \citet{zheng2020smoothing} proposed robust optimal control strategies, and similar ideas have been extended through $H_\infty$ control techniques. Among optimization frameworks, model predictive control (MPC) has emerged as the most prominent paradigm \citep{feng2021robust}, owing to its ability to incorporate constraints and multiple objectives.
+Despite its versatility, the continuous solution of constrained optimization problems introduces significant computational burdens. 
+
+
+In recent years, learning-based methods have attracted growing attention for traffic management. Unlike rule- or optimization-based approaches, they can directly learn policies from data and driving behaviors with improved computational efficiency. \citet{wu2018stabilizing} demonstrated that structured rule-based control strategies can be extracted from the emergent behaviors of RL-controlled AVs in ring road settings. Building on this, subsequent work explored platoon-based control \citep{shi2023deep}, multi-agent coordination with shared policies \citep{suriyarachchi2022multi}.
+
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=1\linewidth]{Passivity TD/doublelaneringnetwork_2.png}
+    \caption{Double-lane ring road. 
+The blue vehicle denotes an AV, while the remaining vehicles represent HDVs.}
+    \label{fig:Network}
+\end{figure}
+
+ Nevertheless, most studies focus primarily on longitudinal control under simplified car-following dynamics, whereas fewer works explicitly model the unpredictability of human lane-changing behavior in mixed traffic. As a result, it remains unclear whether classical single-lane stabilization results extend to multi-lane systems with realistic lane-changing behavior by HDVs. \citet{9765650} demonstrated that a rule-based controller derived from RL-controlled AVs can stabilize traffic flow on a double-lane ring road (Fig.~\ref{fig:Network}) where HDVs are restricted from changing lanes. Whether this conclusion still holds on a double-lane ring road with lane changes by HDVs remained an open question, which we address in this study. 
+ 
+ In this work, adopting an experimental approach based on high-fidelity microscopic traffic simulation, we first evaluated whether RL-controlled AVs can stabilize such an unpredictable lane-changing traffic system. We found out through high-fidelity simulations that the learned policy consistently attempted to minimize headways and suppress lane changes by HDVs, but stop-and-go oscillations remained unresolved. The AV repeatedly accelerated to close the gap as quickly as possible, thereby reducing the additional space that HDVs may exploit to initiate lane-changing. Building on this insight, we extended the framework to two cooperative RL-controlled AVs, sharing environment information. To this end, we designed a new reward function that encouraged coordinated behavior between the two AVs, aiming to reduce excessive gaps and opportunities for HDV lane-changing maneuvers. Under this cooperative setting, the two lanes achieved improved synchronization and traffic oscillations are substantially mitigated. Interestingly, it revealed an emergent pattern. The two AVs repeatedly attempt to form a paired structure, where each AV maintains close proximity to the other across lanes. Based on this observation, we derive a rule-based pair-aligned control strategy that explicitly enforces this coordinated formation. As shown in Fig.~\ref{fig:overview}, the rule-based controller synchronizes the motion of the two AVs, suppresses lane-changing behavior, and effectively couples the two lanes into a single virtual lane, resulting in high average speed.
+
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=1\linewidth]{Passivity TD/The overview of paired controller for stabilizing flow.png}
+    \caption{Conceptual design of a paired-controller for traffic-flow stabilization.
+A single AV cannot suppress traffic oscillations: the AV learns to simply follow its leader with a reduced headway, yet stop-and-go waves persist (left).
+Extending to two centralized AVs produces a stable pattern, but the learned policy remains overly conservative, leaving large gaps that limit traffic efficiency (middle).
+The proposed rule-based pair-aligned controller coordinates the two AVs as a coupled unit, suppresses disruptive lane changes, and achieves both stable flow and high efficiency (right).}
+    \label{fig:overview}
+\end{figure}
+
+{\it Contribution:}
+
+\begin{enumerate}
+    % \item RL training in lane-changing environments reveals that the AV tends to aggressively close the gap to its leader to reduce opportunities for HDVs to initiate lane changes, as such maneuvers may further deteriorate traffic. Moreover, although strategies derived from single-lane stabilization by \citet{wu2018stabilizing} mitigate some disturbances, lane-change maneuvers still arise in the two-lane setting, leaving significant space for improvement.
+
+  
+    \item We developed a cooperative RL for two AVs and observed through high-fidelty simulations that RL naturally yields an emergent cross-lane paired formation. This coordinated structure suppresses traffic oscillations and reduces human lane-changing frequency.
+
+\item Inspired by the learning results, we design a simple rule-based pair-aligned controller that synchronizes the two AVs, suppresses lane-changing, and effectively couples both lanes into a single virtual lane, preventing lane changes by HDVs. Compared with deploying two AVs under the single-lane stabilization controller, the stabilized average speed is improved by 7.4\%.
+
+
+\end{enumerate}
+
+{\it Organization:} Section~\ref{PDSGO} formulates the double-lane ring road mixed-autonomy traffic problem with lane-changing behaviors by HDVs. Section~\ref{sec:Single} evaluates a single RL-controlled AV and shows its limitations in stabilizing double-lane traffic under lane-changing behaviors by HDVs. Section~\ref{sec:Cooperative} investigates cooperative RL and reveals an emergent paired formation between two AVs. Section~\ref{sec:pair} introduces our proposed pair-aligned rule-based controller for a double-lane ring road. Section~\ref{sec:Discussion} compares the performance of different approaches, and Section~\ref{sec:Conclusion} concludes and outlines future directions.
+
+
+
+\section{Problem Formulation}\label{PDSGO}
+
+Stop-and-go traffic refers to congested conditions in which vehicles undergo repeated deceleration–acceleration cycles rather than maintaining steady motion. We study this phenomenon in a high-fidelity double-lane ring road simulation, where multi-lane interactions and unpredictable human lane-changing induce persistent oscillations.
+
+
+\subsection{Double-Lane Ring Road with Lane Changing Behavior}
+
+The double-lane ring traffic environment serves as a controlled testbed to study lane-changing interactions and Stop-and-Go oscillations. These oscillations arise from the inherent unpredictability in human driving behavior—such as heterogeneous reaction times, perception errors, and inconsistent braking responses. As illustrated in Fig.~\ref{fig:stop-and-go}, even minor fluctuations in acceleration or lane-changing decisions can trigger self-sustaining stop-and-go waves. \citet{9765650} showed that 1 AV can be trained in the double-lane ring to mitigate the stop-and-go phenomenon with assumption that human driver in the simulation can not make a lane changes, which is unrealistic in real-world traffic. 
+
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=1\linewidth]{Passivity TD/trajectory_log_allhuman44.png}
+    \caption{Stop-and-Go oscillations.}
+    \label{fig:stop-and-go}
+\end{figure}
+
+\subsection{Formulation as an RL Problem}
+\label{subsec:rl_formulation}
+
+We model the vehicular control problem as a finite-horizon discounted Markov decision process (MDP) \citep{puterman2014markov}:
+$\mathcal{M} = (\mathcal{S}, \mathcal{A}, \mathcal{T}, r, \rho_0, \gamma, H)$.
+Here, $\mathcal{S}$ denotes the state space, with $s_t \in \mathcal{S}$ representing the state at time $t$, and 
+$\mathcal{A}$ denotes the action space, with $a_t \in \mathcal{A}$ the corresponding action. 
+The stochastic transition dynamics are governed by the transition kernel 
+$\mathcal{T} : \mathcal{S} \times \mathcal{A} \to \mathcal{P}(\mathcal{S})$, where 
+$\mathcal{T}(s' \mid s, a) = \Pr(s_{t+1} = s' \mid s_t = s, a_t = a)$.
+The per-step reward is specified through the function 
+$r : \mathcal{S} \times \mathcal{A} \times \mathcal{S} \to \mathbb{R}$, with $r_t = r(s_t, a_t, s_{t+1})$.
+The initial state is drawn from the distribution $\rho_0$, i.e., $s_0 \sim \rho_0$.
+The discount factor is denoted by $\gamma \in [0,1)$, and $H \in \mathbb{Z}_+$ denotes the finite decision horizon.
+
+Given this MDP, a policy $\pi(a \mid s)$ specifies a probability distribution over actions $a \in \mathcal{A}$ at each state $s \in \mathcal{S}$. The RL objective is to find a policy that maximizes the expected discounted return \citep{sutton1998reinforcement}:
+\begin{equation}
+\max_{\pi}
+\; J(\pi)
+\,=\,
+\mathbb{E}_{\substack{
+s_0 \sim \rho_0,\
+a_t \sim \pi(\cdot \mid s_t), \\
+s_{t+1} \sim \mathcal{T}(\cdot \mid s_t,a_t)
+}}
+\left[
+\sum_{t=0}^{H-1} \gamma^t r(s_t, a_t, s_{t+1})
+\right].
+\label{eq:mdp_objective}
+\end{equation}
+The vehicular control problems considered in this paper are more naturally viewed as infinite-horizon MDPs ($H \to \infty$). In practice, we approximate this by choosing a large but finite horizon $H$.
+
+In our specific setting of mixed traffic on a double-lane ring road:
+\begin{itemize}
+    \item The \textbf{state space} $\mathcal{S}$ comprises shared traffic variables (e.g., relative positions and velocities of all AVs) and local partial observations (e.g., relative speeds and distances to neighboring vehicles).
+    \item The \textbf{action space} $\mathcal{A}$ consists of acceleration commands and lane-changing decisions.
+    \item The \textbf{reward} $r$ is designed to encourage improvements in traffic efficiency. The per-step reward encourages high average speed and synchronization between AVs, while penalizing aggressive accelerations.
+
+\end{itemize}
+
+The exact formalizations of these spaces and reward structures will be presented in detail in the following sections of the paper. The single-agent setting serves as the starting point: here, a single RL-controlled vehicle is deployed among HDVs to mitigate stop-and-go oscillations. 
+When scaling to a cooperative RL setting, the design of states and actions becomes different. Each RL agent may receive a richer observation space that includes not only neighbors but also traffic information about the other AVs. The reward design also shifts. While in single-agent control the objective might emphasize average speed, in cooperative control the reward often balances efficiency with system-level cooperation. 
+\subsection{Simulation Setup}
+The double-lane ring road environment consists of two 250 m lanes forming a closed-loop network with a uniform speed limit and populated by 44 vehicles. All simulations are performed in the SUMO microscopic traffic simulator, and agent training is carried out using the Flow RL framework \citep{wu2017flow}. A warm-up period of 500 seconds is introduced to generate traffic oscillations, during which the RL agent behaves as a default IDM vehicle \citep{treiber2000congested} combined with the LC2013 lane-changing model \citep{erdmann2015sumo}. To induce realistic and diverse human lane-changing behavior, the LC2013 parameters are randomized within appropriate empirical ranges, producing variable and unpredictable HDV maneuvers during warm-up.
+ AVs will be controlled by RL integrated with multilayer perceptron (MLP) network.
+ 
+\section{Single-Agent Reinforcement Learning}\label{sec:Single}
+In the first phase, we construct a single-AV environment in which exactly one vehicle is governed by the RL policy, while all remaining HDVs retain their stochastic lane-changing behavior.
+\subsection{Observation, Action, and Environment Specification}
+At each timestep $t$, the RL-controlled AV receives an observation vector at time step $t$:
+\begin{equation}
+o_t
+=
+\Big[
+\tfrac{v_t^{AV}}{v_{\max}},
+\;
+\mathbf{z}_{t}^{(0)},
+\;
+\mathbf{z}_{t}^{(1)}
+\Big],
+\end{equation}
+where the first element is the AV speed $v_t^{AV}$ normalized by the maximum allowable speed $v_{\max}$ in the ring road.
+For each lane $\ell={0,1}$, the vector $\mathbf{z}_{t}^{\ell} \in \mathbb{R}^5$ encodes:
+\begin{equation}
+\mathbf{z}_{t}^{\ell}
+=
+\Big[
+\mathbf{1}_{\{\ell = \ell_t\}},
+\;
+\tfrac{d_{f,t}^{\ell}}{L},
+\;
+\tfrac{v_{f,t}^{\ell}}{v_{\max}},
+\;
+\tfrac{d_{b,t}^{\ell}}{L},
+\;
+\tfrac{v_{b,t}^{\ell}}{v_{\max}}
+\Big],
+\end{equation}
+where:
+\begin{itemize}
+\item $\mathbf{1}_{\{\ell = \ell_t\}}$ is a lane-indicator taking value $1$ if the ego AV is currently in lane $\ell$, and $0$ otherwise;
+\item $d_{f,t}^{\ell}$ and $v_{f,t}^{\ell}$ denote the headway distance and speed of the leading vehicle in lane $\ell$;
+\item $d_{b,t}^{\ell}$ and $v_{b,t}^{\ell}$ denote the tailway distance and speed of the following vehicle in lane $\ell$;
+\item $L$ is the total length of the ring road.
+\end{itemize}
+
+All distances are normalized by $L$, and all speeds are normalized by $v_{\max}$.  
+Thus, for a double-lane ring road ($n_{\text{lanes}}=2$), the observation dimension becomes $
+\dim(o_t^i)
+= 1 + 2 \times 5 = 11
+$. The action space of the RL-controlled vehicle is given by
+\begin{equation}
+a_t^i = \big[a^{\text{acc}}_t,\, a^{\text{lc,raw}}_t \big],
+\end{equation}
+where $a^{\text{acc}}_t \in [-0.5, 0.5]$ is the longitudinal acceleration command and 
+$a^{\text{lc,raw}}_t \in [-1,1]$ is a continuous lane-changing intention signal. $a^{\text{lc,raw}}_t$ is subsequently mapped to a discrete command 
+\(a^{\text{lc}}_t \in \{-1,0,+1\}\):
+\begin{equation}
+ a^{\text{lc}}_t = \begin{cases} +1, & a^{\text{lc,raw}}_t > \delta \quad \text{(change to the right lane)}, \\[6pt] -1, & a^{\text{lc,raw}}_t < -\delta \quad \text{(change to the left lane)}, \\[6pt] 0, & |a^{\text{lc,raw}}_t| \leq \delta \quad \text{(keep lane)}, \end{cases}
+ \end{equation}
+where \(\delta\) is a threshold (e.g., \(\delta = 0.33\)).
+
+\subsection{Reward Design}
+
+In the single-agent setting, the AV receives a reward equal to the instantaneous average speed of all vehicles,
+thereby encouraging the agent to improve the overall efficiency of the ring-road system.
+
+\subsection{Results and Analysis}
+As shown in Fig.~\ref{fig:1AVLC}, there still existed stop-and-go oscillations. In this setting, the AV learns to maintain very close spacing to its leader, effectively leaving insufficient gaps for HDVs to initiate safe lane changes and thereby suppressing some lane-changing attempts. However, this behavior does not eliminate oscillations.
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=1\linewidth]{Passivity TD/trajectory_log_1AVLC.png}
+    \caption{Time space diagram: Single-agent RL controller with one AV in a double-lane ring road with lane-changing HDVs.}
+    \label{fig:1AVLC}
+\end{figure}
+
+HDVs exhibit diverse lane-changing tendencies driven by aggressiveness, reaction time, and available gaps, modeled through LC2013 with parameters randomized within realistic ranges.
+ Such maneuvers introduce strong disturbances into the traffic stream. It will force following vehicles to brake or introduce speed fluctuations that propagate as stop-and-go waves.
+If the AV were to leave larger gaps or slow down, it would attract more HDVs merging into its lane, become trapped behind slower vehicles, and suffer reduced speed and negative rewards. Thus, the AV converges to a locally optimal but globally insufficient strategy. AV closely follows its leader to avoid disruptive human lane-changing. But the overall traffic instability remains unresolved. These observations underscore that uncontrolled lane-changing is the primary destabilizing factor in mixed traffic. Suppressing unnecessary lane-changing is key to improving stability. It motivates cooperative training with two AVs to jointly reduce lane-changing and enhance stability. 
+
+
+\section{Cooperative Reinforcement Learning}
+\label{sec:Cooperative}
+We deploy a cooperative RL framework. Exactly two AVs are jointly governed by a shared RL policy. As indicated in Section~\ref{sec:Single}, suppressing unnecessary lane-changing is crucial for enhancing traffic stability. Therefore, we restrict both AVs to remain in their assigned lanes and focus exclusively on longitudinal control, maximizing their stabilizing influence in each lane.
+\subsection{Observation, Action, and Environment Specification}
+The agent receives centralized continuous observation that captures relevant lane-level traffic features and pairwise coordination information. The observation vector has dimension $12$ and includes, for each AV: its own velocity, the velocity and gap of its lane leader and follower, as well as two cooperative terms representing the signed longitudinal distance and relative velocity between the two AVs. 
+At each time step $t$, the $i$th AV $i \in \{1,2\}$, receives a lane-local observation vector:
+\begin{equation}
+o^{i}_{t} =
+\Big[
+    \tfrac{v_t^i}{v_{\max}},\;
+    \tfrac{v^{\mathrm{lead}}_{i,t}}{v_{\max}},\;
+    \tfrac{v^{\mathrm{foll}}_{i,t}}{v_{\max}},\;
+    \tfrac{d^{\mathrm{lead}}_{i,t}}{L},\;
+    \tfrac{d^{\mathrm{foll}}_{i,t}}{L}
+\Big],
+\end{equation}
+where $v_t^i$ is the speed of the $i$th AV, 
+$v^{\mathrm{lead}}_{i,t}$ and $v^{\mathrm{foll}}_{i,t}$ denote the speeds of the lane leader and follower,
+and $d^{\mathrm{lead}}_{i,t}$ and $d^{\mathrm{foll}}_{i,t}$ are the corresponding headways.  
+All speeds are normalized by $v_{\max}$ and all distances by the ring length $L$. Here, index $i \in \{1,2\}$ refers to the relative ordering of the two AVs
+along the ring: AV~1 is the front vehicle, and AV~2 is the back 
+vehicle. This ordering is updated at each time step.
+
+To capture inter-lane cooperative behavior between the two AVs, two additional pairwise states are included:
+\begin{equation}
+\left[
+d_{\mathrm{AV},t},\;
+\Delta v_{\mathrm{AV},t}
+\right]
+=
+\left[
+\frac{x_t^1 - x_t^2}{L},\;
+\frac{v_t^1 - v_t^2}{v_{\max}}
+\right].
+\end{equation}
+where $x_t^1$, $x_t^2$ is the position of AVs in the double-lane ring network.
+
+Stacking the lane-local and cooperative components gives the complete observation vector:
+\begin{equation}
+o_t = 
+\big[
+    o^{1}_t,\;
+    o^{2}_t,\;
+    d_{\mathrm{AV},t},\;
+    \Delta v_{\mathrm{AV},t}
+\big]
+\in \mathbb{R}^{12}.
+\end{equation}
+
+
+The action applied at time $t$ consists of continuous longitudinal accelerations for the two AVs:
+\begin{equation}
+a_t
+=
+\begin{bmatrix}
+a_1(t) \\
+a_2(t)
+\end{bmatrix}
+\in 
+\big[-0.5,\, 0.5\big]^2,
+\end{equation}
+where $a_{i,t}$ is the commanded acceleration of the $i$th AV, bounded by acceleration and deceleration limits.
+
+
+% \subsection{Reward Design}
+% The centralized reward function encourages the two AVs to jointly maintain a stable formation, reduce unnecessary gaps, synchronize speeds, and maximize traffic throughput while ensuring smooth control. The reward is composed of four terms:
+% \begin{flalign}
+% r_{\mathrm{pos}} &= -w_{\mathrm{pos}}
+%     \left|\frac{\Delta x_{12}}{L/2}\right|, &
+% \\
+% r_{\mathrm{sync}} &= -w_{\mathrm{sync}}
+%     \left|\frac{v_1 - v_2}{v_{\max}}\right|, &
+% \\
+% r_{\mathrm{speed}} &= 
+%     w_{\mathrm{speed}}
+%     \left(\frac{v_1 + v_2}{2v_{\max}}\right)^2, &
+% \\
+% r_{\mathrm{smooth}} &= 
+%     -w_{\mathrm{smooth}} (a_1^2 + a_2^2). &
+% \end{flalign}
+
+
+
+% The total reward is
+% \begin{equation}
+% r_t = r_{\mathrm{pos}} + 
+%       r_{\mathrm{sync}} + 
+%       r_{\mathrm{speed}} + 
+%       r_{\mathrm{smooth}}
+% \end{equation}
+
+% where each term encodes a specific aspect of coordinated behavior. 
+% The proximity term $r_{\mathrm{pos}}$ penalizes large longitudinal separation between the two AVs, encouraging them to remain closely aligned and form a stable pair. 
+% The synchronization term $r_{\mathrm{sync}}$ penalizes velocity mismatch, promoting coherent movement and preventing overtaking or oscillatory interactions. 
+% The mean-speed term $r_{\mathrm{speed}}$ rewards higher average speed of the AV pair, thereby aligning local control behavior with global traffic-efficiency objectives. 
+% Finally, the smoothness term $r_{\mathrm{smooth}}$ penalizes excessive acceleration to encourage stable, gentle, and physically realistic control inputs. 
+% Together, these terms guide the AVs toward coordinated, efficient, and dynamically stable driving behavior.
+
+\subsection{Reward Design}
+
+At each time step $t$, the centralized reward function encourages the two AVs to jointly maintain a stable formation, reduce unnecessary gaps, synchronize speeds, and maximize traffic throughput while ensuring smooth control. 
+The reward consists of four components:
+\begin{flalign}
+r_{\mathrm{pos},t} &= 
+    -w_{\mathrm{pos}}
+    \left|
+        \frac{x^1_t - x^2_t}{L}
+    \right|,&\\
+r_{\mathrm{sync},t} &= 
+    -w_{\mathrm{sync}}
+    \left|
+        \frac{v^1_t - v^2_t}{v_{\max}}
+    \right|,&\\
+r_{\mathrm{speed},t} &= 
+    w_{\mathrm{speed}}
+    \left(
+        \frac{v^1_t + v^2_t}{2\,v_{\max}}
+    \right)^2,\\
+r_{\mathrm{smooth},t} &= 
+    -w_{\mathrm{smooth}}
+    \Big(
+        (a^1_t)^2 + (a^2_t)^2
+    \Big),&
+\end{flalign}
+where $w_{\mathrm{pos}}$, $w_{\mathrm{sync}}$, $w_{\mathrm{speed}}$, and $w_{\mathrm{smooth}}$ are the weights of each reward.
+The total reward at time step $t$ is
+\begin{equation}
+r_t = 
+    r_{\mathrm{pos},t}
+    + r_{\mathrm{sync},t}
+    + r_{\mathrm{speed},t}
+    + r_{\mathrm{smooth},t}
+\end{equation}
+The proximity reward $r_{\mathrm{pos},t}$ penalizes large longitudinal 
+separation between the front and back AVs, encouraging a compact and 
+stable pairing structure. The synchronization term $r_{\mathrm{sync},t}$ 
+penalizes velocity mismatch to promote coherent motion. The speed term 
+$r_{\mathrm{speed},t}$ rewards higher mean pairwise speed, aligning local 
+actions with global traffic-efficiency objectives. Finally, the smoothness 
+term $r_{\mathrm{smooth},t}$ discourages aggressive accelerations to ensure 
+stable and physically realistic control. Together, these components guide 
+the AV pair toward coordinated, efficient, and dynamically stable behavior.
+
+
+\subsection{Results and Analysis}
+
+As shown in Fig.~\ref{fig:2AVCEN}, the two RL-controlled AVs naturally form a cross-lane paired structure, and the stop-and-go oscillations are substantially mitigated. During training, we observe that the leading AV often decelerates to allow the trailing AV to catch up, after which the two vehicles align longitudinally. At this moment, many human drivers take chances when making lane changes. Once paired, the two AVs maintain nearly identical positions across lanes, effectively forming a unified virtual vehicle. This alignment eliminates the additional gap that HDVs typically exploit to initiate lane changes. After approximately 100 seconds, no further lane-changing events are observed, indicating that the paired formation suppresses disruptive merging behavior and stabilizes the two-lane traffic flow.
+
+
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=1\linewidth]{Passivity TD/trajectory_log_2AVCentral.png}
+    \caption{Time space diagram: Cooperative RL controller governing two AVs in a double-lane ring road with lane-changing HDVs. The star markers in the figure indicate lane-changing events made by the HDVs.}
+    \label{fig:2AVCEN}
+\end{figure}
+
+This coordinated pattern is discovered by the cooperative RL policy. However, this pattern also exhibits limitations. First, the paired AVs tend to form a relatively slow-moving platoon; this behavior results from the reward weights, which prioritize synchronization and stability over maintaining higher speeds. Second, while the paired structure suppresses lane-changing, the AVs often leave a considerable space ahead of them, indicating potential for improving average speed and overall traffic efficiency. The pairing mechanism can be interpreted as follows: the leading AV deliberately reduces its velocity to allow the trailing AV to close the gap, enabling the formation of a coordinated two-vehicle platoon spanning both lanes. Once formed, the pair acts as a moving bottleneck that prevents HDVs from executing lane-changing, thereby transforming the two-lane system into a single controllable virtual lane. This emergent behavior suggests that rule-based controllers inspired by this pairing mechanism may achieve similar stabilization effects with lower computational cost and greater interpretability.
+
+\section{Rule-Based Pair-Aligned Control Strategy}\label{sec:pair}
+The results presented in Section~\ref{sec:Cooperative} reveal a consistent alternating pair pattern. Inspired by it, we construct a rule-based control strategy.
+\subsection{The Derived Control Design from Learning Results}
+As illustrated in Fig.~\ref{fig:logic of pair}, the theoretically optimal cooperative behavior would be for both AVs to move as a tightly coupled pair—effectively functioning as a single integrated vehicle. 
+Under such conditions, the original double-lane control problem can be reformulated as a single-lane cooperative control problem. 
+This concept can also be generalized to multi-lane ring roads, where vehicles from different lanes form inter-lane pairs and cooperatively regulate the overall traffic flow.
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[width=1\linewidth]{Paired.jpg}
+%     \caption{\hl{Change it: Rule-based pair-aligned control strategy}}
+%     \label{fig:Paired}
+% \end{figure}
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=1\linewidth]{Passivity TD/The flowchart of paired controller.png}
+    \caption{Rule-based pair-aligned control strategy}
+    \label{fig:logic of pair}
+\end{figure}
+
+To enforce coherent behavior between the two AVs, we design a rule-based Pair-Aligned Control Strategy, as shown in Algorithm.~\ref{alg:pair}. Let $d_p$ denote the signed longitudinal displacement between the ego vehicle and its designated
+partner, and let $v$ and $v_p$ denote their respective speeds. The controller applies three hierarchical components:
+
+1) \emph{Formation:} When $|d_p|$ exceeds a design threshold $ d_{th} $, the controller regulates longitudinal geometry through a
+proportional alignment term, driving $d_p \rightarrow d_{th}$.
+
+2) \emph{Synchronization:} If positions are aligned but a speed mismatch remains, a velocity-matching feedback term
+suppresses $|v_p - v|$ until it is limited to the minimum variation $\delta_v$ and joint motion is achieved.
+
+3) \emph{Cruise:} Once both spatial and velocity discrepancies become sufficiently small, the AV pair behaves as a single coupled unit and tracks a shared desired speed \(v^\star\) from IDM model configuration, defined as the solution to
+\begin{equation}
+s_{\mathrm{eq}}^{\max} 
+= \left( s_0 + v^\star \tau \right)
+\left[ 1 - \left( \frac{v^\star}{v_0} \right)^{\gamma} \right]^{-1/2},
+\end{equation}
+where \(s_0\), \(\tau\), \(v_0\), and \(\gamma\) are the car-following parameters.
+The maximum equilibrium spacing is
+\begin{equation}
+s_{\mathrm{eq}}^{\max}
+= \frac{L - N s_{\min}}{N - 1}.
+\end{equation}
+where $N$ is the total number of vehicles on the ring, and $s_{\min}$ is the minimum safety spacing between any two consecutive vehicles. 
+% This expression follows from the geometric constraint that the $N-1$ remaining gaps must each be at least $s_{\min}$, so the largest possible spacing for one vehicle is obtained by assigning $s_{\min}$ to all other gaps and distributing the remaining length $L - N s_{\min}$ to the remaining inter-vehicle distance.
+
+All acceleration commands are saturated within physical limits $a_{\max}$. This structure ensures convergence to a stable,
+pairwise configuration that learning-based methods fail to maintain consistently.
+\begin{algorithm}[t!]\label{Alg:PairRule}
+\caption{Pair-Aligned Control Strategy}
+\label{alg:pair}
+\begin{algorithmic}[1]
+\Require Ego state $(x, v)$; partner state $(x_p, v_p)$; control gains ($k_{\mathrm{pair}}$, $ k_{\mathrm{sync}}$, $k_v$);
+\Ensure Acceleration command $a$
+
+\State $d_p \gets (x_p - x)$ \Comment{Signed periodic displacement}
+
+\If{$|d_p| > d_{th}$}
+    \State $a \gets k_{\mathrm{pair}}\, d_p$  \Comment{Formation: spatial alignment}
+\ElsIf{$|v_p - v| > \delta_v$}
+    \State $a \gets k_{\mathrm{sync}} (v_p - v)$ \Comment{Synchronization}
+\Else
+    \State $a \gets k_v (v^\star - v)$ \Comment{Cruise: joint steady-state}
+\EndIf
+
+\State $a \gets \mathrm{clip}(a, -a_{\max}, a_{\max})$
+\State \Return $a$
+
+\end{algorithmic}
+\end{algorithm}
+ 
+
+\subsection{Results and Analysis}
+
+As shown in Fig.~\ref{fig:2AVPair}, the two AVs rapidly form a paired and aligned structure across lanes and exhibit improved stabilizing performance. At the beginning of the maneuver, the leading AV decelerates sharply to allow the back AV to close the gap. During this transient phase, several HDVs attempt lane changes, but the number of such events is significantly lower compared with the purely learned RL behavior. The rule-based policy completes the pairing process more quickly, leaving fewer opportunities for HDVs to merge into the AVs’ gap.
+
+Once the back AV successfully catches up, the pair accelerates cooperatively and reaches a higher cruising speed while preventing further lane changes. The position of AVs in both lanes are exactly same. We can see that there is fewer gaps in front of the AVs. The reduced spacing in front of the AV pair illustrates another advantage. It can minimize unnecessary gaps that HDVs could otherwise exploit. It effectively couples the two lanes into a single virtual lane, resulting in both higher stability and higher average speed. Detailed average velocity improvements, will be presented in the following section.
+
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=1\linewidth]{Passivity TD/trajectory_log_paired_controller.png}
+    \caption{Time space diagram: Proposed pair-aligned rule-based controller stabilizing both lanes. The star markers in the figure indicate lane-changing events made by HDVs.}
+    \label{fig:2AVPair}
+\end{figure}
+
+
+\section{Discussion and Comparison}
+\label{sec:Discussion} 
+
+In this section, we evaluate the rule-based controller derived from the learning approach of \citet{wu2018stabilizing}. As shown in Fig.~\ref{fig:1AVHAND}, their controller is implemented in a double-lane ring environment in which all HDVs perform lane changes according to heterogeneous driver characteristics. Within its own lane, the derived policy exhibits stable behavior: the AV rapidly closes the gap to its leader and maintains a consistent speed profile. The controller also allows slight deceleration when the AV’s velocity exceeds the optimal equilibrium speed, thereby preserving longitudinal stability.
+
+During the initial phase (0–50 seconds), however, at least one HDV performs a lane change, which increases local density and eliminates available gaps for subsequent merging within the AV’s lane. While this mechanism effectively prevents further lane changes in the AV’s lane, the adjacent lane continues to exhibit pronounced stop-and-go oscillations. Such oscillatory dynamics propagate throughout the network and may increase safety risks, fuel consumption, and emissions.
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=1\linewidth]{Passivity TD/trajectory_log_handcraft.png}
+    \caption{Time space diagram: Single-lane stabilization controller applied to one AV in a two-lane ring with lane-changing HDVs. The star markers in the figure indicate lane-changing events made by HDVs.}
+    \label{fig:1AVHAND}
+\end{figure}
+
+Because the controller was originally designed for a single-lane setting without explicit lateral considerations, we further examine its performance when two AVs—each controlled by the same rule—are placed in both lanes. As illustrated in Fig.~\ref{fig:2AVHAND}, each AV successfully stabilizes its own lane to a certain degree. Nevertheless, several limitations emerge. Although each lane individually exhibits smoother dynamics, noticeable gaps remain in front of both AVs. When two AVs operate independently across lanes, both lanes simultaneously exhibit these gap variations, unintentionally increasing the number of spatial opportunities for HDVs to switch lanes. These additional lane-changing events not only reintroduce instability but also induce unnecessary braking, increasing fuel consumption, emissions, and safety risks. Overall, while the derived controller stabilizes each lane individually, its single-lane design and lack of coordinated behavior across lanes limit its effectiveness in multi-lane environments. Considerable room for improvement remains.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\linewidth]{Passivity TD/trajectory_log_handcraft2av.png}
+    \caption{Time space diagram: Independent single-lane stabilization controllers applied to two AVs across both lanes with lane-changing behavior. The star markers in the figure indicate lane-changing events made by HDVs.}
+    \label{fig:2AVHAND}
+\end{figure}
+Figure~\ref{fig:avragespeed} summarizes the average speed across all evaluated controllers. All averages are computed over the period after $t = 500\,\text{s}$, when the controllers begin actively stabilizing the platoon.
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=1\linewidth]{Passivity TD/avg_speed_comparison.png}
+    \caption{Average speed under different control strategies. 
+1AV-single lane controller (SLC): single-AV rule-based controller \citep{wu2018stabilizing}; 
+PARC: proposed pair-aligned rule-based controller; 
+2AV-SLC: two independent rule-based controllers \citep{wu2018stabilizing} applied independently to both lanes; 
+RL-1AV: single-AV RL controller; 
+RL-Coop-2AV: cooperative two-AV RL controller.}
+    \label{fig:avragespeed}
+\end{figure}
+
+The single-lane stabilization controller of \citet{wu2018stabilizing} achieves the highest mean velocity $4.972\,\text{m/s}$, when only one AV is deployed. However, this comes at the cost of leaving the adjacent lane unstable. Stop-and-go waves persist in the second lane, leading to increased energy consumption, emissions, and collision risk. When this single-lane controller is extended to two AVs operating independently in the two-lane setting, the traffic becomes more stable than the one-AV case, but the average speed drops to $4.441\,\text{m/s}$, indicating that the controller does not fully exploit the multi-lane structure. In contrast, our proposed paired controller (Section~\ref{sec:pair}) stabilizes both lanes simultaneously and achieves a higher average speed of $4.768\,\text{m/s}$. The stabilized average speed is improved by 7.4\%. This demonstrates that coordinated cross-lane behavior provides a advantage over independent single-lane strategies, especially in environments with lane-changing disturbances. 
+
+The two controllers at the bottom of Fig.~\ref{fig:avragespeed} correspond to reinforcement-learning-based approaches. As discussed in Section~\ref{sec:Single}, a single RL-controlled AV fails to stabilize mixed traffic with lane-changing HDVs, instead propagating stop-and-go waves and yielding a low average speed of approximately $3.547\,\text{m/s}$. The cooperative centralized RL policy achieves stable flow but settles at a relatively low cruising speed due to reward weighting. Nonetheless, the emergent paired pattern observed during training directly inspired the development of our rule-based paired controller.
+
+Overall, these findings highlight a key trade-off between efficiency and stability. Although the single-lane controller can yield high average speeds in its own lane, the remaining lane suffers from persistent stop-and-go oscillations—incurring additional fuel consumption and environmental costs. Our paired rule-based controller, inspired by cooperative RL, mitigates oscillations across both lanes while maintaining competitive average speeds. Future research will further investigate the energy implications of these behaviors and develop cooperative RL controllers that simultaneously improve stability, efficiency, and energy consumption.
+
+
+\section{Conclusion}
+\label{sec:Conclusion}
+This work investigated whether the classical single-AV traffic stabilization result extends to a more realistic two-lane environment with human lane-changing. The independent single-lane strategy lacks the ability to counteract disturbances originating from the adjacent lane. When trained in a two-lane ring with lane-changing HDVs, the AV primarily learns to close gaps aggressively to suppress merging opportunities, but this behavior is insufficient to eliminate stop-and-go oscillations. Lane-changing introduces cross-lane perturbations that propagate across both lanes, fundamentally destabilizing mixed traffic. We then extended the framework to cooperative reinforcement learning and observed that two RL-controlled AVs naturally develop an emergent cross-lane paired formation. The paired structure significantly reduces lane-changing frequency and mitigates oscillations across both lanes. Inspired by these insights, we introduce a simple rule-based 
+pair-aligned controller that explicitly enforces the required coordination 
+structure. This controller reliably stabilizes the two-lane system by coupling it into a single virtual lane and achieves a relatively high average speed.
+
+Future work includes the development of decentralized multi-agent RL controllers capable of autonomously maintaining stabilizing structures in multi-lane mixed traffic. We also plan to investigate more realistic driver models and additional traffic scenarios to further enhance robustness. 
+
+
+\balance
+\bibliographystyle{ifacconf}
+\bibliography{ifacconf}
+  
+
+\end{document}
