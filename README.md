@@ -148,7 +148,7 @@ The video thumbnails link to the hosted demos. Local copies are also stored in `
       <em>All-human stop-and-go baseline.</em>
     </td>
     <td width="50%" valign="top">
-      <a href="https://youtu.be/W-hXR4RJz5o">
+      <a href="https://youtube.com/shorts/GptLjUW8utM?feature=share">      
         <img src="https://img.youtube.com/vi/W-hXR4RJz5o/hqdefault.jpg" width="100%" alt="PARC video">
       </a>
       <br>
